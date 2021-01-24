@@ -1,0 +1,109 @@
+
+You need to download apache tomcat 8 and unzip by using tar –xvzf 
+
+To start tomcat go to bin dir inside tomcat and ./startup.sh 
+
+To check tomcat is up or ps –ef | grep tomcat and check port number 8080 
+
+ 
+By default tomcat uses 8080 but Jenkins uses 8080 so u nedd to change the port number for tomcat ,u can change it by editing the server.xml in connector section (line number 69 in file)and  change the port number and stop tomcat and start the tomcat 
+
+To shutdown ./shutdown.sh 
+ 
+Now give permissions for startup.sh so that any user start up the tomcat ..dont give full permisiions in organization 
+
+chmod +x startup.sh
+chmod +x shutdown.sh
+
+Creating soft link for startup .sh  and shutdown.sh 
+
+ln -s /opt/tomcat-8.5.49/bin/startup.sh /usr/local/bin/tomcatup ------for starting tomcat 
+
+ln -s /opt/tomcat-8.5.49/bin/shutdown.sh /usr/local/bin/tomcatdown  ---for stopping tomcat 
+
+
+for tomcat logs  /opt/tomcat/logs/catalina.out
+
+
+tomcatup but page not loading for my centos 7 
+
+iptables -I  OUTPUT -o -enp0s3 -d 0.0.0.0/0 -j ACCEPT
+iptables -I  INPUT -i -enp0s3 -m state --state ESTABLISHED,RELATED -j ACCEPT
+iptables -I INPUT -j ACCEPT
+
+and try to login  now 403 acces denied because we didn’t give permmison for tomcat users to login so give permission by doing following things 
+cmd :find / -name context.xml 
+
+output :/opt/tomcat-8.5.49/conf/context.xml
+/opt/tomcat-8.5.49/webapps/host-manager/META-INF/context.xml
+/opt/tomcat-8.5.49/webapps/manager/META-INF/context.xml
+
+
+vi   /opt/tomcat-8.5.49/webapps/host-manager/META-INF/context.xml
+
+comment the line number 19,20 as fallows
+  19 <!--  <Valve className="org.apache.catalina.valves.RemoteAddrValve"
+     20          allow="127\.\d+\.\d+\.\d+|::1|0:0:0:0:0:0:0:1" /> -->
+
+vi /opt/tomcat-8.5.49/webapps/manager/META-INF/context.xml
+
+19   <!-- <Valve className="org.apache.catalina.valves.RemoteAddrValve"
+     20          allow="127\.\d+\.\d+\.\d+|::1|0:0:0:0:0:0:0:1" /> -->
+
+
+Now to add user got to /opt/tomcat/conf
+
+And edit tomcat-users.xml
+
+vi tomcat-users.xml
+
+and paste following under  second NOTE or  from line 36
+
+
+
+
+<?xml version='1.0' encoding='cp1252'?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<tomcat-users>
+<role rolename="manager-gui"/>
+<role rolename="manager-script"/>
+<role rolename="manager-jmx"/>
+<role rolename="manager-status"/>
+<role rolename="admin-gui"/>
+<role rolename="admin-script"/>
+<user username="admin" password="admin" roles="admin-gui,manager-gui,manager-script"/>
+
+-->
+<!--
+  NOTE:  The sample user and role entries below are intended for use with the
+  examples web application. They are wrapped in a comment and thus are ignored
+  when reading this file. If you wish to configure these users for use with the
+  examples web application, do not forget to remove the <!.. ..> that surrounds
+  them. You will also need to set the passwords to something appropriate.
+-->
+
+<!--
+  <role rolename="tomcat"/>
+  <role rolename="role1"/>
+  <user username="tomcat" password="<must-be-changed>" roles="tomcat"/>
+  <user username="both" password="<must-be-changed>" roles="tomcat,role1"/>
+  <user username="role1" password="<must-be-changed>" roles="role1"/>
+-->
+</tomcat-users>
+
+
